@@ -32,25 +32,8 @@ impl<const INPUT_LEN: usize, const OUTPUT_LEN: usize> Model<INPUT_LEN, OUTPUT_LE
 impl<const INPUT_LEN: usize, const OUTPUT_LEN: usize> LinearLayer<INPUT_LEN, OUTPUT_LEN> {
     pub fn random_new(rng: &mut ThreadRng) -> Self {
         Self {
-            // nodes: [(); OUTPUT_LEN].map(|_| LinearNode::random_new(rng)),
             weights: Matrix::random_new(rng),
             biases: Matrix::random_new(rng),
         }
     }
 }
-
-/*#[derive(Debug, Default, Clone, PartialEq, PartialOrd)]
-struct LinearNode<const INPUT_LEN: usize> {
-    weights: Tensor<INPUT_LEN>,
-    bias: f64,
-}
-
-#[cfg(feature = "random_generation")]
-impl<const INPUT_LEN: usize> LinearNode<INPUT_LEN> {
-    pub fn random_new(rng: &mut ThreadRng) -> Self {
-        Self {
-            weights: Tensor::random_new(rng),
-            bias: rng.gen(),
-        }
-    }
-}*/
