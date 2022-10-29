@@ -30,13 +30,16 @@ impl<const COLUMNS: usize, const ROWS: usize> Matrix<COLUMNS, ROWS> {
     pub unsafe fn get_unchecked_mut(&mut self, (x, y): (usize, usize)) -> &mut f64 {
         self.inner.get_unchecked_mut(x).get_unchecked_mut(y)
     }
+    pub fn elements(&self) -> impl Iterator<Item = &f64> {
+        self.inner.iter().flatten()
+    }
     pub fn elements_mut(&mut self) -> impl Iterator<Item = &mut f64> {
         self.inner.iter_mut().flatten()
     }
 }
 
 impl<const COLUMNS: usize> Matrix<COLUMNS, 1> {
-    /// Finds the squared length of the tensor
+    /// Finds the squared length of the matrix
     pub fn length_sqrd(&self) -> f64 {
         self.inner[0]
             .iter()
@@ -44,6 +47,12 @@ impl<const COLUMNS: usize> Matrix<COLUMNS, 1> {
     }
     pub fn length(&self) -> f64 {
         self.length_sqrd().sqrt()
+    }
+}
+
+impl<const COLUMNS: usize, const ROWS: usize> Default for Matrix<COLUMNS, ROWS> {
+    fn default() -> Self {
+        Self::new_zeroed()
     }
 }
 

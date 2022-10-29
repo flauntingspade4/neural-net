@@ -1,6 +1,6 @@
 use rand::rngs::ThreadRng;
 
-use neural_net::{cost, LinearLayer, Model, Relu, Tensor, Matrix};
+use neural_net::{cost, LinearLayer, Matrix, Model, Relu};
 
 #[derive(Default, Debug)]
 struct SimplestNet {
@@ -40,7 +40,7 @@ fn new_empty() {
 
     // assert_eq!(output.sum(), 0.);
 
-    let cost = cost(network, Matrix::random_new(&mut rng), Matrix::new([1.]));
+    let cost = cost(network, Matrix::random_new(&mut rng), Matrix::from_arrays([[1.]]));
 
     println!("{}", cost);
 }

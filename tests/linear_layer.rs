@@ -1,4 +1,4 @@
-use neural_net::{LinearLayer, Model, Relu, Tensor};
+use neural_net::{LinearLayer, Matrix, Model, Relu};
 
 #[cfg(feature = "random_generation")]
 use rand::rngs::ThreadRng;
@@ -21,7 +21,7 @@ impl TestNetwork {
 }
 
 impl Model<3, 10> for TestNetwork {
-    fn forward(&self, matrix: &Matrix<3>) -> Matrix<10> {
+    fn forward(&self, matrix: &Matrix<3, 1>) -> Matrix<10, 1> {
         let matrix = self.input.forward(matrix);
         let matrix = self.linear_1.forward(&matrix);
         self.output.forward(&matrix)
@@ -34,7 +34,7 @@ fn new_empty() {
 
     let output = network.forward(&Matrix::default());
 
-    assert_eq!(output.sum(), 0.);
+    assert_eq!(output.elements().sum::<f64>(), 0.);
 }
 
 #[cfg(feature = "random_generation")]
