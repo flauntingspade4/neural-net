@@ -1,0 +1,18 @@
+[package]
+name = "neural-net"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rand = { version = "^0.8", optional = true, features = ["min_const_gen"] }
+
+[dev-dependencies]
+criterion = "^0.4"
+
+[features]
+default = ["random_generation"]
+random_generation = ["rand"]
+
+[[bench]]
+name = "linear_layer"
+harness = false
