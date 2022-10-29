@@ -9,5 +9,5 @@ pub use matrix::Matrix;
 pub use relu::Relu;
 
 pub trait Model<const INPUT_LEN: usize, const OUTPUT_LEN: usize> {
-    fn forward(&self, tensor: &Matrix<INPUT_LEN, 1>) -> Matrix<OUTPUT_LEN, 1>;
+    fn forward(&self, matrix: &Matrix<INPUT_LEN, 1>) -> Matrix<OUTPUT_LEN, 1>;
 }

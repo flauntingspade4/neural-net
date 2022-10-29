@@ -1,6 +1,6 @@
 use rand::rngs::ThreadRng;
 
-use neural_net::{cost, LinearLayer, Model, Relu, Tensor};
+use neural_net::{cost, LinearLayer, Model, Relu, Tensor, Matrix};
 
 #[derive(Default, Debug)]
 struct SimplestNet {
@@ -22,11 +22,11 @@ impl SimplestNet {
 }
 
 impl Model<1, 1> for SimplestNet {
-    fn forward(&self, tensor: &Tensor<1>) -> Tensor<1> {
-        let tensor = self.input.forward(tensor);
-        let tensor = self.linear_1.forward(&tensor);
-        let tensor = self.linear_2.forward(&tensor);
-        self.output.forward(&tensor)
+    fn forward(&self, matrix: &Matrix<1, 1>) -> Matrix<1, 1> {
+        let matrix = self.input.forward(matrix);
+        let matrix = self.linear_1.forward(&matrix);
+        let matrix = self.linear_2.forward(&matrix);
+        self.output.forward(&matrix)
     }
 }
 
@@ -36,11 +36,11 @@ fn new_empty() {
 
     let network = SimplestNet::random_new(&mut rng);
 
-    let output = network.forward(&Tensor::default());
+    let output = network.forward(&Matrix::default());
 
     // assert_eq!(output.sum(), 0.);
 
-    let cost = cost(network, Tensor::random_new(&mut rng), Tensor::new([1.]));
+    let cost = cost(network, Matrix::random_new(&mut rng), Matrix::new([1.]));
 
     println!("{}", cost);
 }

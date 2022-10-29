@@ -21,10 +21,10 @@ impl TestNetwork {
 }
 
 impl Model<3, 10> for TestNetwork {
-    fn forward(&self, tensor: &Tensor<3>) -> Tensor<10> {
-        let tensor = self.input.forward(tensor);
-        let tensor = self.linear_1.forward(&tensor);
-        self.output.forward(&tensor)
+    fn forward(&self, matrix: &Matrix<3>) -> Matrix<10> {
+        let matrix = self.input.forward(matrix);
+        let matrix = self.linear_1.forward(&matrix);
+        self.output.forward(&matrix)
     }
 }
 
@@ -32,7 +32,7 @@ impl Model<3, 10> for TestNetwork {
 fn new_empty() {
     let network = TestNetwork::default();
 
-    let output = network.forward(&Tensor::default());
+    let output = network.forward(&Matrix::default());
 
     assert_eq!(output.sum(), 0.);
 }
@@ -46,7 +46,7 @@ fn new_random() {
 
     println!("{:?}", network);
 
-    let output = network.forward(&Tensor::random_new(&mut rng));
+    let output = network.forward(&Matrix::random_new(&mut rng));
 
     println!("{:?}", output);
 }
