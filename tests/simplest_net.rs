@@ -1,31 +1,25 @@
 use rand::rngs::ThreadRng;
 
-use neural_net::{cost, GhostToken, LinearLayer, Matrix, Model, Relu};
+use neural_net::{activation::ReLU, cost, GhostToken, LinearLayer, Matrix, Model};
 
 #[derive(Default)]
 struct SimplestNet<'id> {
-    input: Relu<'id, 1, 1, LinearLayer<'id, 1, 1>>,
-    linear_1: Relu<'id, 1, 1, LinearLayer<'id, 1, 1>>,
+    input: LinearLayer<'id, 1, 1, ReLU>,
+    linear_1: LinearLayer<'id, 1, 1, ReLU>,
 }
 
 impl<'id> SimplestNet<'id> {
     pub fn new() -> Self {
-        let input = Relu::new(LinearLayer::new(
-            Matrix::from_arrays([[1.]]),
-            Matrix::from_arrays([[0.]]),
-        ));
+        let input = LinearLayer::new(Matrix::from_arrays([[1.]]), Matrix::from_arrays([[0.]]));
 
-        let linear_1 = Relu::new(LinearLayer::new(
-            Matrix::from_arrays([[1.5]]),
-            Matrix::from_arrays([[0.]]),
-        ));
+        let linear_1 = LinearLayer::new(Matrix::from_arrays([[1.5]]), Matrix::from_arrays([[0.]]));
 
         Self { input, linear_1 }
     }
     pub fn random_new(rng: &mut ThreadRng) -> Self {
         Self {
-            input: Relu::new(LinearLayer::random_new(rng)),
-            linear_1: Relu::new(LinearLayer::random_new(rng)),
+            input: LinearLayer::random_new(rng),
+            linear_1: LinearLayer::random_new(rng),
         }
     }
 }
