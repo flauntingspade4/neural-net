@@ -1,14 +1,14 @@
 use rand::rngs::ThreadRng;
 
-use neural_net::{activation::ReLU, cost, GhostToken, LinearLayer, Matrix, Model};
+use neural_net::{activation::ReLU, cost, LinearLayer, Matrix, Model};
 
 #[derive(Default)]
-struct SimplestNet<'id> {
-    input: LinearLayer<'id, 1, 1, ReLU>,
-    linear_1: LinearLayer<'id, 1, 1, ReLU>,
+struct SimplestNet {
+    input: LinearLayer<1, 1, ReLU>,
+    linear_1: LinearLayer<1, 1, ReLU>,
 }
 
-impl<'id> SimplestNet<'id> {
+impl SimplestNet {
     pub fn new() -> Self {
         let input = LinearLayer::new(Matrix::from_arrays([[1.]]), Matrix::from_arrays([[0.]]));
 
@@ -24,49 +24,44 @@ impl<'id> SimplestNet<'id> {
     }
 }
 
-impl<'id> Model<'id, 1, 1> for SimplestNet<'id> {
-    fn forward(&self, token: &GhostToken<'id>, matrix: &Matrix<1, 1>) -> Matrix<1, 1> {
-        let matrix = self.input.forward(token, matrix);
-        self.linear_1.forward(token, &matrix)
+impl Model<1, 1> for SimplestNet {
+    fn forward(&self, matrix: &Matrix<1, 1>) -> Matrix<1, 1> {
+        let matrix = self.input.forward(matrix);
+        self.linear_1.forward(&matrix)
     }
 }
 
 #[test]
 fn new_empty() {
-    GhostToken::new(|token| {
-        let mut rng = rand::thread_rng();
+    let mut rng = rand::thread_rng();
 
-        let network = SimplestNet::random_new(&mut rng);
+    let network = SimplestNet::random_new(&mut rng);
 
-        let output = network.forward(&token, &Matrix::default());
+    let output = network.forward(&Matrix::default());
 
-        // assert_eq!(output.sum(), 0.);
+    // assert_eq!(output.sum(), 0.);
 
-        let cost = cost(
-            network,
-            &token,
-            Matrix::random_new(&mut rng),
-            Matrix::from_arrays([[1.]]),
-        );
+    let cost = cost(
+        network,
+        Matrix::random_new(&mut rng),
+        Matrix::from_arrays([[1.]]),
+    );
 
-        println!("{}", cost);
-    });
+    println!("{}", cost);
 }
 
 #[test]
 fn training() {
-    GhostToken::new(|token| {
-        let mut network = SimplestNet::new();
+    let mut network = SimplestNet::new();
 
-        let matrix_0 = Matrix::from_arrays([[0.5]]);
-        let matrix_1 = network.input.forward(&token, &matrix_0);
-        let output = network.linear_1.forward(&token, &matrix_1);
+    let matrix_0 = Matrix::from_arrays([[0.5]]);
+    let matrix_1 = network.input.forward(&matrix_0);
+    let output = network.linear_1.forward(&matrix_1);
 
-        let cost = (output - Matrix::from_arrays([[1.]])).length_sqrd();
+    let cost = (output - Matrix::from_arrays([[1.]])).length_sqrd();
 
-        let m_l_partial = (2. * output.elements().next().unwrap() - 2. * cost)
-            * matrix_1.elements().next().unwrap();
+    let m_l_partial =
+        (2. * output.elements().next().unwrap() - 2. * cost) * matrix_1.elements().next().unwrap();
 
-        println!("{m_l_partial}");
-    })
+    println!("{m_l_partial}");
 }

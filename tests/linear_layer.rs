@@ -1,21 +1,21 @@
-use neural_net::{LinearLayer, Matrix, Model, Relu};
+use neural_net::{activation::ReLU, LinearLayer, Matrix, Model};
 
 #[cfg(feature = "random_generation")]
 use rand::rngs::ThreadRng;
 
 #[derive(Default, Debug)]
 struct TestNetwork {
-    input: Relu<3, 5, LinearLayer<3, 5>>,
-    linear_1: Relu<5, 64, LinearLayer<5, 64>>,
-    output: Relu<64, 10, LinearLayer<64, 10>>,
+    input: LinearLayer<3, 5, ReLU>,
+    linear_1: LinearLayer<5, 64, ReLU>,
+    output: LinearLayer<64, 10, ReLU>,
 }
 
 impl TestNetwork {
     pub fn random_new(rng: &mut ThreadRng) -> Self {
         Self {
-            input: Relu::new(LinearLayer::random_new(rng)),
-            linear_1: Relu::new(LinearLayer::random_new(rng)),
-            output: Relu::new(LinearLayer::random_new(rng)),
+            input: LinearLayer::random_new(rng),
+            linear_1: LinearLayer::random_new(rng),
+            output: LinearLayer::random_new(rng),
         }
     }
 }
