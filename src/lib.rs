@@ -1,16 +1,15 @@
+pub mod activation;
 mod cost;
 mod ghost;
 mod linear;
 mod matrix;
 mod parameters;
-mod relu;
 
 pub use cost::cost;
 pub use ghost::GhostToken;
 pub use linear::LinearLayer;
 pub use matrix::Matrix;
 pub use parameters::Parameters;
-pub use relu::Relu;
 
 pub trait Model<'id, const INPUT_LEN: usize, const OUTPUT_LEN: usize> {
     fn forward(
