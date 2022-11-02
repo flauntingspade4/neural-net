@@ -9,7 +9,7 @@ pub struct ReLU;
 impl<const OUTPUT_LEN: usize> ActivationFunction<OUTPUT_LEN> for ReLU {
     fn activate(mut matrix: Matrix<OUTPUT_LEN, 1>) -> Matrix<OUTPUT_LEN, 1> {
         for i in matrix.elements_mut() {
-            *i = (i > &mut 0.) as usize as f64 * *i;
+            *i *= usize::from(i > &mut 0.) as f64;
         }
 
         matrix
