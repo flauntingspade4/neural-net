@@ -10,7 +10,7 @@ pub struct Matrix<const COLUMNS: usize, const ROWS: usize> {
 impl<const COLUMNS: usize, const ROWS: usize> Matrix<COLUMNS, ROWS> {
     /// Initializes a new matrix of 0s.
     #[must_use]
-    pub fn new_zeroed() -> Self {
+    pub const fn new_zeroed() -> Self {
         Self {
             inner: [[0.; COLUMNS]; ROWS],
         }
@@ -21,20 +21,20 @@ impl<const COLUMNS: usize, const ROWS: usize> Matrix<COLUMNS, ROWS> {
         Self { inner: rng.gen() }
     }
     #[must_use]
-    pub fn from_arrays(inner: [[f64; COLUMNS]; ROWS]) -> Self {
+    pub const fn from_arrays(inner: [[f64; COLUMNS]; ROWS]) -> Self {
         Self { inner }
     }
-    pub unsafe fn get_unchecked(&self, (x, y): (usize, usize)) -> &f64 {
-        self.inner.get_unchecked(x).get_unchecked(y)
-    }
-    pub unsafe fn get_unchecked_mut(&mut self, (x, y): (usize, usize)) -> &mut f64 {
-        self.inner.get_unchecked_mut(x).get_unchecked_mut(y)
+    pub unsafe fn set_unchecked(&mut self, (x, y): (usize, usize), value: f64) {
+        *self.inner.get_unchecked_mut(x).get_unchecked_mut(y) = value;
     }
     pub fn elements(&self) -> impl Iterator<Item = &f64> {
         self.inner.iter().flatten()
     }
     pub fn elements_mut(&mut self) -> impl Iterator<Item = &mut f64> {
         self.inner.iter_mut().flatten()
+    }
+    pub fn columns(&self) -> impl Iterator<Item = &[f64; COLUMNS]> {
+        self.inner.iter()
     }
 }
 
@@ -62,7 +62,7 @@ impl<const COLUMNS: usize, const ROWS: usize> Add for Matrix<COLUMNS, ROWS> {
     fn add(mut self, rhs: Self) -> Self::Output {
         for columns in self.inner.iter_mut().zip(rhs.inner.iter()) {
             for row in columns.0.iter_mut().zip(columns.1.iter()) {
-                *row.0 = *row.0 + *row.1;
+                *row.0 += *row.1;
             }
         }
         self
@@ -75,7 +75,7 @@ impl<const COLUMNS: usize, const ROWS: usize> Sub for Matrix<COLUMNS, ROWS> {
     fn sub(mut self, rhs: Self) -> Self::Output {
         for columns in self.inner.iter_mut().zip(rhs.inner.iter()) {
             for row in columns.0.iter_mut().zip(columns.1.iter()) {
-                *row.0 = *row.0 - *row.1;
+                *row.0 -= *row.1;
             }
         }
         self
@@ -95,7 +95,7 @@ impl<const COLUMNS: usize, const ROWS: usize, const NEW_ROWS: usize> Mul<Matrix<
                 let mut value = 0.;
 
                 for i in 0..ROWS {
-                    value += self.inner[i][column] * rhs.inner[row][i]
+                    value += self.inner[i][column] * rhs.inner[row][i];
                 }
 
                 matrix.inner[row][column] = value;
