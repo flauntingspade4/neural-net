@@ -1,12 +1,14 @@
-use std::marker::PhantomData;
+use core::marker::PhantomData;
 
 use crate::{
-    activation::ActivationFunction, matrix::Matrix, Backpropagation, Differentiable, Model,
+    activation::ActivationFunction, matrix::Matrix, optim::Optimizer, Backpropagation,
+    Differentiable, Model,
 };
 
 #[cfg(feature = "random_generation")]
 use rand::rngs::ThreadRng;
 
+#[derive(Debug)]
 pub struct LinearLayer<
     const INPUT_LEN: usize,
     const OUTPUT_LEN: usize,
@@ -22,7 +24,10 @@ pub struct LinearLayer<
 impl<const INPUT_LEN: usize, const OUTPUT_LEN: usize, T: ActivationFunction<OUTPUT_LEN>>
     LinearLayer<INPUT_LEN, OUTPUT_LEN, T>
 {
-    pub fn new(weights: Matrix<OUTPUT_LEN, INPUT_LEN>, biases: Matrix<OUTPUT_LEN, 1>) -> Self {
+    pub const fn new(
+        weights: Matrix<OUTPUT_LEN, INPUT_LEN>,
+        biases: Matrix<OUTPUT_LEN, 1>,
+    ) -> Self {
         Self {
             weights,
             biases,
@@ -44,6 +49,23 @@ impl<const INPUT_LEN: usize, const OUTPUT_LEN: usize, T: ActivationFunction<OUTP
     pub fn zero_grad(&mut self) {
         self.weights_grad = Matrix::new_zeroed();
         self.biases_grad = Matrix::new_zeroed();
+    }
+
+    pub fn apply_gradients(&mut self, optim: &impl Optimizer) {
+        for (variable, grad) in self
+            .weights
+            .elements_mut()
+            .zip(self.weights_grad.elements_mut())
+            .chain(
+                self.biases
+                    .elements_mut()
+                    .zip(self.biases_grad.elements_mut()),
+            )
+        {
+            *grad *= optim.learning_rate();
+
+            *variable -= *grad;
+        }
     }
 }
 
@@ -69,12 +91,12 @@ impl<const INPUT_LEN: usize, const OUTPUT_LEN: usize, T: ActivationFunction<OUTP
     fn calculate_grads(
         &mut self,
         backpropagation: Backpropagation<OUTPUT_LEN>,
-        matrix: Matrix<OUTPUT_LEN, 1>,
+        activations: Matrix<INPUT_LEN, 1>,
     ) -> Backpropagation<INPUT_LEN> {
         for ((total_derivative, previous_layer_activation), (i, bias_grad)) in backpropagation
-            .running_total
+            .total_derivatives
             .elements()
-            .zip(matrix.elements())
+            .zip(activations.elements())
             .zip(self.biases_grad.elements_mut().enumerate())
         {
             for input_i in 0..INPUT_LEN {

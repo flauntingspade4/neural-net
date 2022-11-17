@@ -4,6 +4,7 @@ pub trait ActivationFunction<const OUTPUT_LEN: usize> {
     fn activate(matrix: Matrix<OUTPUT_LEN, 1>) -> Matrix<OUTPUT_LEN, 1>;
 }
 
+#[derive(Debug)]
 pub struct ReLU;
 
 impl<const OUTPUT_LEN: usize> ActivationFunction<OUTPUT_LEN> for ReLU {

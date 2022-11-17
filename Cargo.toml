@@ -13,6 +13,9 @@ criterion = "^0.4"
 default = ["random_generation"]
 random_generation = ["rand"]
 
+[profile.bench]
+debug = true
+
 [[bench]]
 name = "linear_layer"
 harness = false
