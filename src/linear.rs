@@ -37,7 +37,7 @@ impl<const INPUT_LEN: usize, const OUTPUT_LEN: usize, T: ActivationFunction<OUTP
         }
     }
 
-    pub fn new_zeroed() -> Self {
+    pub const fn new_zeroed() -> Self {
         Self::new(Matrix::new_zeroed(), Matrix::new_zeroed())
     }
 
